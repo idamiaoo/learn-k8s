@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etcd-config
+  labels:
+    app: etcd
+data:
+  etcd.yaml: |

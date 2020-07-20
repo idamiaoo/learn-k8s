@@ -1,0 +1,6 @@
+name: 'default'
+data-dir: /etcd-data
+listen-peer-urls: http://localhost:2380
+listen-client-urls: http://localhost:2379
+advertise-client-urls: http://192.168.34.48:2379,http://192.168.34.48:4001
+initial-advertise-peer-urls: http://192.168.34.48:2380

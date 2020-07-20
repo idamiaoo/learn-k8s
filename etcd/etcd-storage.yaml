@@ -1,0 +1,34 @@
+## PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: etcd
+  labels:
+    app: etcd             #设置 pv 的 label 标签
+    type: local
+spec:
+  storageClassName: manual-etcd
+  capacity:          
+    storage: 1Gi           #设置 pv 存储资源大小 
+  accessModes:       
+  - ReadWriteOnce   
+  hostPath:  
+    path: /Users/office/data/k8s/etcd/data
+  persistentVolumeReclaimPolicy: Retain  
+
+---
+## PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: etcd
+spec:
+  storageClassName: manual-etcd
+  resources:
+    requests:
+      storage: 1Gi         #设置 pvc 存储资源大小
+  accessModes:
+  - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: etcd           #根据 Label 选择对应 PV

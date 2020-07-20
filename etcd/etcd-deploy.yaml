@@ -1,0 +1,65 @@
+## Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etcd-1
+  labels:
+    app: etcd-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: etcd-1
+  template:
+    metadata:
+      labels:
+        app: etcd-1
+    spec:     
+      containers:
+      - name: etcd-1
+        image: quay.io/coreos/etcd
+        env:
+          - name: HOSTIP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        command:
+          - "sh"
+          - "-c"
+          - /usr/local/bin/etcd
+            --name etcd-1
+            --data-dir /etcd-data
+            --advertise-client-urls http://${HOSTIP}:2379,http://${HOSTIP}:4001
+            --listen-client-urls http://${HOSTIP}:2379,http://${HOSTIP}:4001
+            --initial-advertise-peer-urls http://${HOSTIP}:2380
+            --listen-peer-urls http://${HOSTIP}:2380
+            --initial-cluster-token k8s-etcd
+            --initial-cluster etcd-1=http://${HOSTNAME}:2380
+            --initial-cluster-state new
+        ports:
+        - containerPort: 2379
+        - containerPort: 4001
+        - containerPort: 2380
+        livenessProbe:
+          tcpSocket:
+            port: 2379
+          initialDelaySeconds: 300
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 2379
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: data
+          mountPath: /etcd-data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: etcd

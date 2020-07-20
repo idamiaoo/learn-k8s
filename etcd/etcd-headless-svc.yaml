@@ -1,0 +1,18 @@
+## Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-1
+  labels:
+    app: etcd-1
+spec:
+  clusterIP: None
+  ports:
+  - name: client
+    port: 2379
+    targetPort: 2379
+  - name: message
+    port: 2380
+    targetPort: 2380
+  selector:
+    app: etcd-1
